@@ -42,9 +42,7 @@ function showPage(page) {
 
   if (page === "projects") loadProjects();
   if (page === "downloads") renderDownloads();
-  if (page === "dashboard") {
-    loadProjects();
-  }
+  if (page === "dashboard") loadProjects();
 }
 
 document.querySelectorAll(".nav").forEach(n => {
@@ -108,7 +106,7 @@ async function testConnection() {
   }
 }
 
-// YOUTUBE IMPORT
+// YOUTUBE IMPORT AND AI PROCESSING
 async function checkYoutube() {
   const url = $("youtubeUrl").value.trim();
 
@@ -122,9 +120,113 @@ async function checkYoutube() {
     return;
   }
 
-  $("youtubeMessage").textContent =
-    "YouTube import is not available in the current backend. " +
-    "Please download or use a video file you are authorized to process.";
+  if (!apiBase()) {
+    $("youtubeMessage").textContent =
+      "Connect your backend first in Settings.";
+    return;
+  }
+
+  const confirmed = window.confirm(
+    "Do you own this video or have permission to download and process it?"
+  );
+
+  if (!confirmed) {
+    $("youtubeMessage").textContent =
+      "Import cancelled. Permission confirmation is required.";
+    return;
+  }
+
+  const btn = $("youtubeUrl").closest("div")?.querySelector("button");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Importing...";
+  }
+
+  $("youtubeMessage").textContent = "Importing YouTube video...";
+  $("processingMessage").textContent = "Downloading YouTube video...";
+
+  $("uploadProgress").classList.remove("hidden");
+  $("progressBar").style.width = "0%";
+  $("progressNumber").textContent = "0%";
+  $("progressText").textContent = "Importing YouTube video...";
+
+  try {
+    // STEP 1: IMPORT VIDEO
+    const importData = await request("/api/youtube/import", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        url: url,
+        rights_confirmed: true
+      })
+    });
+
+    if (!importData.job || !importData.job.job_id) {
+      throw new Error("Backend did not return a valid Job ID.");
+    }
+
+    const jobId = importData.job.job_id;
+    activeJobId = jobId;
+
+    $("youtubeMessage").textContent =
+      "Video imported successfully! Starting AI processing...";
+
+    $("progressBar").style.width = "100%";
+    $("progressNumber").textContent = "100%";
+    $("progressText").textContent = "Import completed";
+
+    // STEP 2: START AI PROCESSING
+    const language = $("captionLanguage").value;
+
+    const processData = await request(
+      "/api/process/" + encodeURIComponent(jobId),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          number_of_clips: Number($("clipCount").value),
+          min_duration: 15,
+          max_duration: 60,
+          language: language === "none" ? null : language
+        })
+      }
+    );
+
+    if (!processData.job) {
+      throw new Error("Processing response is missing Job information.");
+    }
+
+    $("youtubeMessage").textContent =
+      "AI processing started successfully!";
+
+    $("processingMessage").textContent =
+      "AI is creating your clips. Please wait...";
+
+    $("progressText").textContent = "AI processing started";
+    $("progressNumber").textContent = "1%";
+    $("progressBar").style.width = "1%";
+
+    await loadProjects();
+    watchJob(jobId);
+
+  } catch (e) {
+    $("youtubeMessage").textContent =
+      "YouTube Import Error: " + e.message;
+
+    $("processingMessage").textContent =
+      "Processing could not start.";
+
+    $("progressText").textContent = "Import failed";
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Import";
+    }
+  }
 }
 
 // FILE SELECTION
@@ -200,7 +302,6 @@ async function startProcessing() {
   $("processingMessage").textContent = "";
 
   try {
-    // STEP 1: UPLOAD VIDEO
     const form = new FormData();
     form.append("file", selectedFile);
 
@@ -220,7 +321,6 @@ async function startProcessing() {
     $("processingMessage").textContent =
       "Video uploaded. Starting AI processing...";
 
-    // STEP 2: START AI PROCESSING
     const language = $("captionLanguage").value;
 
     const processData = await request(
@@ -253,8 +353,6 @@ async function startProcessing() {
     btn.textContent = "Processing...";
 
     await loadProjects();
-
-    // STEP 3: WATCH JOB
     watchJob(jobId);
 
   } catch (e) {
@@ -392,7 +490,6 @@ async function loadProjects() {
 
     renderProjects();
 
-    // Collect clips from all jobs
     clips = [];
 
     projects.forEach(job => {
