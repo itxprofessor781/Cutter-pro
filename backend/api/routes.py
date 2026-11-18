@@ -1,5 +1,6 @@
 
 import uuid
+import asyncio
 from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
@@ -13,6 +14,7 @@ from services.job_manager import (
     get_job,
     list_jobs,
 )
+from services.youtube_import import download_youtube_video
 
 
 router = APIRouter(prefix="/api", tags=["CUTTER AI"])
@@ -28,6 +30,11 @@ class ProcessRequest(BaseModel):
     min_duration: int = Field(default=15, ge=5, le=600)
     max_duration: int = Field(default=60, ge=5, le=600)
     language: str | None = None
+
+
+class YouTubeImportRequest(BaseModel):
+    url: str = Field(..., min_length=10, max_length=2048)
+    rights_confirmed: bool = False
 
 
 def public_job(job: dict) -> dict:
@@ -132,6 +139,58 @@ async def upload_video(file: UploadFile = File(...)):
 
     finally:
         await file.close()
+
+
+@router.post("/youtube/import")
+async def import_youtube_video(request: YouTubeImportRequest):
+    if not request.rights_confirmed:
+        raise HTTPException(
+            400,
+            "Please confirm that you own this video or have permission to process it."
+        )
+
+    job_id = str(uuid.uuid4())
+    downloaded_file = None
+
+    try:
+        downloaded_file = await asyncio.to_thread(
+            download_youtube_video,
+            request.url,
+            job_id
+        )
+
+        file_path = downloaded_file["path"]
+        filename = Path(file_path).name
+
+        job = register_upload(
+            job_id=job_id,
+            file_path=file_path,
+            filename=filename,
+        )
+
+        return {
+            "success": True,
+            "message": "YouTube video imported successfully.",
+            "job": public_job(job),
+        }
+
+    except ValueError as exc:
+        if downloaded_file:
+            Path(downloaded_file["path"]).unlink(missing_ok=True)
+
+        raise HTTPException(
+            400,
+            str(exc)
+        ) from exc
+
+    except Exception as exc:
+        if downloaded_file:
+            Path(downloaded_file["path"]).unlink(missing_ok=True)
+
+        raise HTTPException(
+            502,
+            "YouTube video could not be imported. It may be unavailable or restricted."
+        ) from exc
 
 
 @router.post("/process/{job_id}")
