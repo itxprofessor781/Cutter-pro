@@ -1,0 +1,14 @@
+
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic-settings
+python-dotenv
+faster-whisper
+opencv-python-headless
+scenedetect[opencv]
+numpy
+Pillow
+yt-dlp
+aiofiles
+httpx
