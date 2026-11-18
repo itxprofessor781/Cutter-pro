@@ -12,3 +12,4 @@ Pillow
 yt-dlp
 aiofiles
 httpx
+pytest
