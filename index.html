@@ -1,326 +1,4 @@
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#09090f">
-<title>CUTTER — Free AI Video Clipper</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-*{box-sizing:border-box}
-body{margin:0;background:#09090f;color:#f5f5f7;font-family:Inter,Arial,sans-serif}
-.sidebar{background:#0d0d16;border-right:1px solid #252536}
-.panel{background:#11111d;border:1px solid #26263b;border-radius:16px}
-.gradient{background:linear-gradient(110deg,#8b5cf6,#4169ff)}
-.gradient-text{background:linear-gradient(90deg,#b78aff,#6796ff);background-clip:text;-webkit-background-clip:text;color:transparent}
-.nav{padding:12px 14px;border-radius:10px;color:#9999ad;cursor:pointer;transition:.2s}
-.nav:hover,.nav.active{background:#222039;color:white}
-.btn{padding:13px 20px;border-radius:10px;font-weight:700;cursor:pointer;transition:.2s}
-.btn:hover{filter:brightness(1.2);transform:translateY(-1px)}
-input,select,textarea{background:#0c0c16!important;color:white!important;border:1px solid #303047!important;border-radius:10px;padding:13px;outline:none;width:100%}
-input:focus,select:focus{border-color:#8b5cf6!important}
-.dropzone{border:2px dashed #41405e;border-radius:16px;transition:.2s;cursor:pointer}
-.dropzone:hover,.dropzone.drag{border-color:#9875ff;background:#19152a}
-.small{font-size:12px;color:#9292a8}
-.progress{height:7px;background:#28283b;border-radius:20px;overflow:hidden}
-.progress div{height:100%;background:linear-gradient(90deg,#9b65ff,#4287ff);width:0%;transition:width .3s}
-.hidden-page{display:none}
-video{width:100%;border-radius:10px;background:#050508}
-@media(max-width:850px){
-.sidebar{display:none}
-.mobile-nav{display:flex!important}
-main{padding:18px!important}
-}
-</style>
-</head>
-
-<body>
-
-<div class="flex min-h-screen">
-
-<!-- SIDEBAR -->
-<aside class="sidebar w-64 p-5 flex-shrink-0">
-<div class="flex items-center gap-3 mb-10">
-<div class="gradient w-11 h-11 rounded-xl flex items-center justify-center font-black text-xl">C</div>
-<div>
-<div class="text-xl font-black tracking-widest">CUTTER</div>
-<div class="small">FREE AI VIDEO CLIPPER</div>
-</div>
-</div>
-
-<div class="small uppercase tracking-widest mb-3">Workspace</div>
-<nav class="space-y-2">
-<div class="nav active" data-page="dashboard">⌂ &nbsp; Dashboard</div>
-<div class="nav" data-page="create">✂ &nbsp; Create Clips</div>
-<div class="nav" data-page="projects">▣ &nbsp; My Projects</div>
-<div class="nav" data-page="editor">◫ &nbsp; Video Editor</div>
-<div class="nav" data-page="templates">▤ &nbsp; Templates</div>
-<div class="nav" data-page="downloads">⇩ &nbsp; Downloads</div>
-</nav>
-
-<div class="small uppercase tracking-widest mt-10 mb-3">Preferences</div>
-<div class="nav" data-page="settings">⚙ &nbsp; Settings</div>
-
-<div class="panel p-4 mt-12">
-<div class="text-sm font-bold mb-2">100% Open Source</div>
-<p class="small">No coins. No subscriptions. No watermarks.</p>
-<div class="mt-3 text-xs text-purple-300">Built for creators.</div>
-</div>
-
-<div class="small mt-8">CUTTER v1.0.0</div>
-</aside>
-
-<!-- MOBILE HEADER -->
-<div class="mobile-nav hidden fixed bottom-0 left-0 right-0 z-50 bg-[#11111d] border-t border-[#29293d] justify-around p-3">
-<button onclick="showPage('dashboard')">⌂</button>
-<button onclick="showPage('create')">✂</button>
-<button onclick="showPage('projects')">▣</button>
-<button onclick="showPage('downloads')">⇩</button>
-<button onclick="showPage('settings')">⚙</button>
-</div>
-
-<!-- MAIN -->
-<main class="flex-1 p-9 min-w-0">
-
-<header class="flex justify-between items-center mb-10">
-<div>
-<div class="small mb-2">WORKSPACE / <span id="breadcrumb">DASHBOARD</span></div>
-<h2 class="text-2xl font-bold" id="pageHeading">Dashboard</h2>
-</div>
-<div class="flex items-center gap-3">
-<div class="panel px-4 py-2 text-xs text-green-400">● System interface ready</div>
-<div class="gradient w-10 h-10 rounded-full flex items-center justify-center font-bold">C</div>
-</div>
-</header>
-
-<!-- DASHBOARD -->
-<section id="dashboard" class="page">
-<div class="rounded-2xl p-8 md:p-12 mb-8 relative overflow-hidden" style="background:radial-gradient(ellipse at 90% 20%,#413078 0%,transparent 45%),linear-gradient(120deg,#19152b,#10152a)">
-<div class="relative z-10 max-w-2xl">
-<div class="text-purple-300 text-xs font-bold tracking-widest mb-4">YOUR AI VIDEO WORKSPACE</div>
-<h1 class="text-4xl md:text-6xl font-black leading-tight">Turn Long Videos<br>Into <span class="gradient-text">Viral Shorts.</span></h1>
-<p class="text-gray-300 mt-5 leading-7">Find powerful moments, generate short clips, create captions and export videos ready for social media.</p>
-<button onclick="showPage('create')" class="btn gradient mt-7">✂ Create Your First Clips →</button>
-</div>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-<div class="panel p-5">
-<div class="small">TOTAL PROJECTS</div>
-<div class="text-3xl font-black mt-3" id="totalProjects">0</div>
-</div>
-<div class="panel p-5">
-<div class="small">GENERATED CLIPS</div>
-<div class="text-3xl font-black mt-3" id="totalClips">0</div>
-</div>
-<div class="panel p-5">
-<div class="small">AVAILABLE DOWNLOADS</div>
-<div class="text-3xl font-black mt-3" id="totalDownloads">0</div>
-</div>
-</div>
-
-<div class="panel p-6">
-<div class="flex justify-between mb-5">
-<h3 class="font-bold">Recent Projects</h3>
-<button class="text-purple-300 text-sm" onclick="showPage('projects')">View All →</button>
-</div>
-<div id="recentProjects" class="small">No projects yet. Create your first video project.</div>
-</div>
-</section>
-
-<!-- CREATE -->
-<section id="create" class="page hidden-page">
-<div class="mb-8">
-<h1 class="text-3xl font-black">Create <span class="gradient-text">AI Clips</span></h1>
-<p class="small mt-2">Upload your video or provide a YouTube link to get started.</p>
-</div>
-
-<div class="panel p-6 md:p-8 mb-6">
-<h3 class="font-bold mb-5">01 — Import Your Video</h3>
-
-<label class="small">YOUTUBE VIDEO URL</label>
-<div class="flex flex-col md:flex-row gap-3 mt-2">
-<input id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." />
-<button class="btn gradient whitespace-nowrap" onclick="checkYoutube()">Validate URL</button>
-</div>
-<div id="youtubeMessage" class="small mt-3">YouTube metadata lookup requires a connected backend. Direct video media import is not assumed.</div>
-
-<div class="flex items-center gap-4 my-7">
-<div class="h-px bg-[#303047] flex-1"></div>
-<span class="small">OR UPLOAD YOUR OWN VIDEO</span>
-<div class="h-px bg-[#303047] flex-1"></div>
-</div>
-
-<label class="dropzone block p-8 md:p-12 text-center" id="dropzone">
-<div class="text-5xl mb-4">☁</div>
-<h3 class="font-bold text-lg">Drop your video here</h3>
-<p class="small mt-2">or click to browse files</p>
-<p class="small mt-4">MP4 · MOV · WEBM · MKV</p>
-<input id="videoFile" type="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,.mkv" class="hidden">
-<div id="fileName" class="text-purple-300 mt-4 text-sm"></div>
-</label>
-</div>
-
-<div class="panel p-6 md:p-8 mb-6">
-<h3 class="font-bold mb-5">02 — AI Preferences</h3>
-
-<div class="grid md:grid-cols-2 gap-5">
-<div>
-<label class="small">CLIP STYLE</label>
-<select id="clipStyle" class="mt-2">
-<option value="all">All interesting moments</option>
-<option value="educational">Educational</option>
-<option value="funny">Funny moments</option>
-<option value="motivational">Motivational</option>
-<option value="business">Business advice</option>
-<option value="emotional">Emotional moments</option>
-<option value="podcast">Podcast highlights</option>
-</select>
-</div>
-
-<div>
-<label class="small">NUMBER OF CLIPS</label>
-<select id="clipCount" class="mt-2">
-<option value="5">Up to 5 clips</option>
-<option value="10" selected>Up to 10 clips</option>
-<option value="15">Up to 15 clips</option>
-</select>
-</div>
-
-<div>
-<label class="small">VIDEO ASPECT RATIO</label>
-<select id="aspectRatio" class="mt-2">
-<option value="9:16">9:16 — TikTok / Reels / Shorts</option>
-<option value="1:1">1:1 — Square</option>
-<option value="16:9">16:9 — Landscape</option>
-</select>
-</div>
-
-<div>
-<label class="small">CAPTION LANGUAGE</label>
-<select id="captionLanguage" class="mt-2">
-<option value="en">English</option>
-<option value="ur">Urdu</option>
-<option value="none">No captions</option>
-</select>
-</div>
-
-<div>
-<label class="small">VIDEO QUALITY</label>
-<select id="quality" class="mt-2">
-<option value="720p">720p</option>
-<option value="1080p" selected>1080p</option>
-<option value="original">Original (if supported)</option>
-</select>
-</div>
-
-<div>
-<label class="small">CAPTION TEMPLATE</label>
-<select id="captionTemplate" class="mt-2">
-<option value="modern">Modern Highlight</option>
-<option value="minimal">Minimal</option>
-<option value="bold">Bold Creator</option>
-</select>
-</div>
-</div>
-
-<div class="mt-5">
-<label class="small">CUSTOM TOPIC (OPTIONAL)</label>
-<input id="customTopic" class="mt-2" placeholder="e.g. Find the best business advice and strong hooks">
-</div>
-
-<div class="mt-5">
-<label class="flex gap-3 items-center text-sm">
-<input id="removeSilence" type="checkbox" style="width:17px">
-Remove long silences where supported
-</label>
-</div>
-</div>
-
-<div class="panel p-6">
-<h3 class="font-bold mb-3">03 — Start Processing</h3>
-<p class="small mb-5">Processing requires a connected CUTTER backend and worker.</p>
-<button id="startBtn" class="btn gradient w-full" onclick="startProcessing()">✦ Generate AI Clips</button>
-<div id="uploadProgress" class="hidden mt-6">
-<div class="flex justify-between text-sm mb-2">
-<span id="progressText">Uploading...</span>
-<span id="progressNumber">0%</span>
-</div>
-<div class="progress"><div id="progressBar"></div></div>
-</div>
-<div id="processingMessage" class="small mt-4"></div>
-</div>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects" class="page hidden-page">
-<h1 class="text-3xl font-black mb-2">My Projects</h1>
-<p class="small mb-7">Your video processing history.</p>
-<div id="projectList" class="grid md:grid-cols-2 gap-4">
-<div class="panel p-8 small">No projects available.</div>
-</div>
-</section>
-
-<!-- EDITOR -->
-<section id="editor" class="page hidden-page">
-<h1 class="text-3xl font-black mb-2">Video Editor</h1>
-<p class="small mb-7">Review generated clips and preview your source media.</p>
-<div class="panel p-6">
-<input type="file" id="previewFile" accept="video/*">
-<video id="previewVideo" controls class="mt-5 hidden"></video>
-<p class="small mt-4">Full timeline editing and rendered trim operations require the connected processing backend.</p>
-</div>
-</section>
-
-<!-- TEMPLATES -->
-<section id="templates" class="page hidden-page">
-<h1 class="text-3xl font-black mb-7">Caption Templates</h1>
-<div class="grid md:grid-cols-3 gap-4">
-<div class="panel p-6"><div class="text-purple-300 font-black text-2xl">MODERN</div><p class="small mt-3">Clean highlighted captions.</p></div>
-<div class="panel p-6"><div class="text-blue-300 font-black text-2xl">MINIMAL</div><p class="small mt-3">Simple professional subtitles.</p></div>
-<div class="panel p-6"><div class="text-yellow-300 font-black text-2xl">BOLD</div><p class="small mt-3">Strong creator-style captions.</p></div>
-</div>
-</section>
-
-<!-- DOWNLOADS -->
-<section id="downloads" class="page hidden-page">
-<h1 class="text-3xl font-black mb-2">Downloads</h1>
-<p class="small mb-7">Only completed clips with available files will appear here.</p>
-<div id="downloadList" class="space-y-4">
-<div class="panel p-8 small">No completed downloads yet.</div>
-</div>
-</section>
-
-<!-- SETTINGS -->
-<section id="settings" class="page hidden-page">
-<h1 class="text-3xl font-black mb-2">Settings</h1>
-<p class="small mb-7">Connect your CUTTER backend.</p>
-<div class="panel p-6 max-w-2xl">
-<label class="small">BACKEND API URL</label>
-<input id="apiUrl" class="mt-2" placeholder="https://your-backend.example.com">
-<p class="small mt-3">Enter the public URL of your deployed FastAPI server.</p>
-<button onclick="saveSettings()" class="btn gradient mt-5">Save API Settings</button>
-<button onclick="testConnection()" class="btn mt-5 ml-2 border border-purple-500">Test Connection</button>
-<div id="connectionMessage" class="small mt-4"></div>
-</div>
-<div class="panel p-6 mt-5 max-w-2xl">
-<h3 class="font-bold">About CUTTER</h3>
-<p class="small mt-3">Free and open-source video clipping interface. No credit system or artificial subscription requirement.</p>
-<p class="small mt-3">Your backend must provide persistent storage, AI models and FFmpeg processing.</p>
-</div>
-</section>
-
-<footer class="mt-14 mb-20 text-center small">
-CUTTER © 2026 · FREE AI VIDEO CLIPPER · OPEN SOURCE
-</footer>
-
-</main>
-</div>
-
 <script>
 const $ = id => document.getElementById(id);
 
@@ -328,290 +6,606 @@ let projects = [];
 let clips = [];
 let selectedFile = null;
 let pollTimer = null;
+let activeJobId = null;
 
 const headings = {
-dashboard:"Dashboard",create:"Create Clips",projects:"My Projects",
-editor:"Video Editor",templates:"Templates",downloads:"Downloads",settings:"Settings"
+  dashboard: "Dashboard",
+  create: "Create Clips",
+  projects: "My Projects",
+  editor: "Video Editor",
+  templates: "Templates",
+  downloads: "Downloads",
+  settings: "Settings"
 };
 
-function apiBase(){
-return (localStorage.getItem("cutter_api") || $("apiUrl").value || "").trim().replace(/\/+$/,"");
+function apiBase() {
+  return (
+    localStorage.getItem("cutter_api") ||
+    $("apiUrl").value ||
+    ""
+  ).trim().replace(/\/+$/, "");
 }
 
-function showPage(page){
-document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden-page"));
-$(page).classList.remove("hidden-page");
-document.querySelectorAll(".nav").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
-$("pageHeading").textContent=headings[page];
-$("breadcrumb").textContent=page.toUpperCase();
-if(page==="projects")loadProjects();
-if(page==="downloads")renderDownloads();
-if(page==="dashboard")updateStats();
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.add("hidden-page")
+  );
+
+  $(page).classList.remove("hidden-page");
+
+  document.querySelectorAll(".nav").forEach(n =>
+    n.classList.toggle("active", n.dataset.page === page)
+  );
+
+  $("pageHeading").textContent = headings[page] || "Dashboard";
+  $("breadcrumb").textContent = page.toUpperCase();
+
+  if (page === "projects") loadProjects();
+  if (page === "downloads") renderDownloads();
+  if (page === "dashboard") {
+    loadProjects();
+  }
 }
 
-document.querySelectorAll(".nav").forEach(n=>{
-n.addEventListener("click",()=>showPage(n.dataset.page));
+document.querySelectorAll(".nav").forEach(n => {
+  n.addEventListener("click", () => showPage(n.dataset.page));
 });
 
-$("apiUrl").value=localStorage.getItem("cutter_api")||"";
+$("apiUrl").value = localStorage.getItem("cutter_api") || "";
 
-function saveSettings(){
-const value=$("apiUrl").value.trim().replace(/\/+$/,"");
-if(!value){$("connectionMessage").textContent="Please enter your backend URL.";return;}
-localStorage.setItem("cutter_api",value);
-$("connectionMessage").textContent="API URL saved.";
-}
+function saveSettings() {
+  const value = $("apiUrl").value.trim().replace(/\/+$/, "");
 
-async function request(path,options={}){
-const base=apiBase();
-if(!base)throw new Error("Backend URL missing. Open Settings and connect your API.");
-const response=await fetch(base+path,options);
-if(!response.ok){
-let msg="Request failed: "+response.status;
-try{const data=await response.json();msg=data.detail||data.message||msg;}catch{}
-throw new Error(msg);
-}
-return response;
+  if (!value) {
+    $("connectionMessage").textContent =
+      "Please enter your backend URL.";
+    return;
+  }
+
+  localStorage.setItem("cutter_api", value);
+  $("connectionMessage").textContent = "API URL saved successfully.";
 }
 
-async function testConnection(){
-try{
-const r=await request("/health");
-const data=await r.json();
-$("connectionMessage").textContent="Connected successfully: "+JSON.stringify(data);
-}catch(e){
-$("connectionMessage").textContent="Connection error: "+e.message;
-}
+async function request(path, options = {}) {
+  const base = apiBase();
+
+  if (!base) {
+    throw new Error(
+      "Backend URL missing. Open Settings and connect your API."
+    );
+  }
+
+  const response = await fetch(base + path, options);
+
+  let data = {};
+
+  try {
+    data = await response.json();
+  } catch {}
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || data.message || "Request failed: " + response.status
+    );
+  }
+
+  return data;
 }
 
-async function checkYoutube(){
-const url=$("youtubeUrl").value.trim();
-if(!url){$("youtubeMessage").textContent="Please paste a YouTube URL.";return;}
-if(!/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(url)){
-$("youtubeMessage").textContent="Invalid YouTube URL.";
-return;
+// BACKEND CONNECTION TEST
+async function testConnection() {
+  $("connectionMessage").textContent = "Checking backend connection...";
+
+  try {
+    const data = await request("/api/health");
+
+    $("connectionMessage").textContent =
+      "Connected successfully! " +
+      (data.message || data.status || "Backend is online.");
+  } catch (e) {
+    $("connectionMessage").textContent =
+      "Connection error: " + e.message;
+  }
 }
-$("youtubeMessage").textContent="Checking metadata...";
-try{
-const r=await request("/api/projects",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({name:"YouTube metadata check"})
+
+// YOUTUBE IMPORT
+async function checkYoutube() {
+  const url = $("youtubeUrl").value.trim();
+
+  if (!url) {
+    $("youtubeMessage").textContent = "Please paste a YouTube URL.";
+    return;
+  }
+
+  if (!/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(url)) {
+    $("youtubeMessage").textContent = "Invalid YouTube URL.";
+    return;
+  }
+
+  $("youtubeMessage").textContent =
+    "YouTube import is not available in the current backend. " +
+    "Please download or use a video file you are authorized to process.";
+}
+
+// FILE SELECTION
+const dz = $("dropzone");
+const fileInput = $("videoFile");
+
+dz.addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", e => {
+  selectFile(e.target.files[0]);
 });
-const p=await r.json();
-const meta=await request("/api/projects/"+encodeURIComponent(p.id)+"/youtube-metadata",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({url})
-});
-const data=await meta.json();
-$("youtubeMessage").textContent="Metadata retrieved: "+(data.title||"Video found")+". Direct media access is not assumed. Upload authorized original media to process.";
-}catch(e){
-$("youtubeMessage").textContent=e.message;
-}
-}
 
-const dz=$("dropzone");
-const fileInput=$("videoFile");
-
-dz.addEventListener("click",()=>fileInput.click());
-fileInput.addEventListener("change",e=>selectFile(e.target.files[0]));
-
-dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag");});
-dz.addEventListener("dragleave",()=>dz.classList.remove("drag"));
-dz.addEventListener("drop",e=>{
-e.preventDefault();dz.classList.remove("drag");
-selectFile(e.dataTransfer.files[0]);
+dz.addEventListener("dragover", e => {
+  e.preventDefault();
+  dz.classList.add("drag");
 });
 
-function selectFile(file){
-if(!file)return;
-const allowed=["video/mp4","video/quicktime","video/webm","video/x-matroska"];
-const ext=file.name.split(".").pop().toLowerCase();
-if(!allowed.includes(file.type)&&!["mp4","mov","webm","mkv"].includes(ext)){
-$("fileName").textContent="Unsupported file type.";
-selectedFile=null;return;
-}
-selectedFile=file;
-$("fileName").textContent="✓ "+file.name+" ("+(file.size/1024/1024).toFixed(1)+" MB)";
-}
-
-async function startProcessing(){
-if(!selectedFile){
-$("processingMessage").textContent="Please select a video file first.";
-return;
-}
-if(!apiBase()){
-$("processingMessage").textContent="Connect your backend first in Settings.";
-return;
-}
-
-const btn=$("startBtn");
-btn.disabled=true;
-btn.textContent="Uploading...";
-$("uploadProgress").classList.remove("hidden");
-$("progressBar").style.width="0%";
-$("progressNumber").textContent="0%";
-$("progressText").textContent="Creating project...";
-
-try{
-const pr=await request("/api/projects",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({name:selectedFile.name})
+dz.addEventListener("dragleave", () => {
+  dz.classList.remove("drag");
 });
-const project=await pr.json();
-const form=new FormData();
-form.append("file",selectedFile);
-form.append("clip_style",$("clipStyle").value);
-form.append("clip_count",$("clipCount").value);
-form.append("aspect_ratio",$("aspectRatio").value);
-form.append("caption_language",$("captionLanguage").value);
-form.append("quality",$("quality").value);
-form.append("caption_template",$("captionTemplate").value);
-form.append("custom_topic",$("customTopic").value);
-form.append("remove_silence",$("removeSilence").checked);
 
-const xhr=new XMLHttpRequest();
-xhr.open("POST",apiBase()+"/api/projects/"+encodeURIComponent(project.id)+"/upload");
+dz.addEventListener("drop", e => {
+  e.preventDefault();
+  dz.classList.remove("drag");
+  selectFile(e.dataTransfer.files[0]);
+});
 
-xhr.upload.onprogress=e=>{
-if(e.lengthComputable){
-const percent=Math.round(e.loaded/e.total*100);
-$("progressBar").style.width=percent+"%";
-$("progressNumber").textContent=percent+"%";
-$("progressText").textContent="Uploading video...";
-}
-};
+function selectFile(file) {
+  if (!file) return;
 
-xhr.onload=()=>{
-btn.disabled=false;
-btn.textContent="✦ Generate AI Clips";
-if(xhr.status>=200&&xhr.status<300){
-let result={};
-try{result=JSON.parse(xhr.responseText);}catch{}
-$("processingMessage").textContent="Upload accepted. Waiting for worker processing...";
-if(result.job_id)watchJob(result.job_id,project.id);
-else $("processingMessage").textContent="Backend response did not contain a job ID. Check API integration.";
-}else{
-$("processingMessage").textContent="Upload failed: "+xhr.responseText;
-}
-};
-xhr.onerror=()=>{
-btn.disabled=false;
-btn.textContent="✦ Generate AI Clips";
-$("processingMessage").textContent="Network error during upload.";
-};
-xhr.send(form);
-}catch(e){
-btn.disabled=false;
-btn.textContent="✦ Generate AI Clips";
-$("processingMessage").textContent=e.message;
-}
+  const allowed = [
+    "mp4", "mov", "webm", "mkv", "avi", "m4v"
+  ];
+
+  const ext = file.name.split(".").pop().toLowerCase();
+
+  if (!allowed.includes(ext)) {
+    $("fileName").textContent = "Unsupported file type.";
+    selectedFile = null;
+    return;
+  }
+
+  selectedFile = file;
+
+  $("fileName").textContent =
+    "✓ " + file.name +
+    " (" + (file.size / 1024 / 1024).toFixed(1) + " MB)";
 }
 
-function watchJob(jobId,projectId){
-if(pollTimer)clearInterval(pollTimer);
-pollTimer=setInterval(async()=>{
-try{
-const r=await request("/api/jobs/"+encodeURIComponent(jobId));
-const job=await r.json();
-const progress=Math.min(100,Number(job.progress||0));
-$("progressBar").style.width=progress+"%";
-$("progressNumber").textContent=progress+"%";
-$("progressText").textContent=job.status||"Processing";
-if(job.status==="completed"||job.status==="failed"){
-clearInterval(pollTimer);
-pollTimer=null;
-$("processingMessage").textContent=job.status==="completed"?"Processing completed. Refresh your projects to view available clips.":"Processing failed: "+(job.error||"Unknown error");
-loadProjects();
-}
-}catch(e){
-$("processingMessage").textContent="Status check failed: "+e.message;
-clearInterval(pollTimer);
-}
-},3000);
+// START VIDEO PROCESSING
+async function startProcessing() {
+  if (!selectedFile) {
+    $("processingMessage").textContent =
+      "Please select a video file first.";
+    return;
+  }
+
+  if (!apiBase()) {
+    $("processingMessage").textContent =
+      "Connect your backend first in Settings.";
+    return;
+  }
+
+  const btn = $("startBtn");
+
+  btn.disabled = true;
+  btn.textContent = "Uploading video...";
+
+  $("uploadProgress").classList.remove("hidden");
+  $("progressBar").style.width = "0%";
+  $("progressNumber").textContent = "0%";
+  $("progressText").textContent = "Uploading video...";
+  $("processingMessage").textContent = "";
+
+  try {
+    // STEP 1: UPLOAD VIDEO
+    const form = new FormData();
+    form.append("file", selectedFile);
+
+    const uploadData = await uploadWithProgress(form);
+
+    if (!uploadData.job || !uploadData.job.job_id) {
+      throw new Error("Backend did not return a valid Job ID.");
+    }
+
+    const jobId = uploadData.job.job_id;
+    activeJobId = jobId;
+
+    $("progressBar").style.width = "100%";
+    $("progressNumber").textContent = "100%";
+    $("progressText").textContent = "Upload completed";
+
+    $("processingMessage").textContent =
+      "Video uploaded. Starting AI processing...";
+
+    // STEP 2: START AI PROCESSING
+    const language = $("captionLanguage").value;
+
+    const processData = await request(
+      "/api/process/" + encodeURIComponent(jobId),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          number_of_clips: Number($("clipCount").value),
+          min_duration: 15,
+          max_duration: 60,
+          language: language === "none" ? null : language
+        })
+      }
+    );
+
+    if (!processData.job) {
+      throw new Error("Processing response is missing Job information.");
+    }
+
+    $("processingMessage").textContent =
+      "AI processing started successfully. Please wait...";
+
+    $("progressText").textContent = "AI processing started";
+    $("progressNumber").textContent = "1%";
+    $("progressBar").style.width = "1%";
+
+    btn.textContent = "Processing...";
+
+    await loadProjects();
+
+    // STEP 3: WATCH JOB
+    watchJob(jobId);
+
+  } catch (e) {
+    $("processingMessage").textContent =
+      "Error: " + e.message;
+
+    btn.disabled = false;
+    btn.textContent = "✦ Generate AI Clips";
+  }
 }
 
-async function loadProjects(){
-try{
-const r=await request("/api/projects");
-const data=await r.json();
-projects=Array.isArray(data)?data:(data.projects||[]);
-renderProjects();
-}catch(e){
-$("projectList").innerHTML='<div class="panel p-6 small">Unable to load projects: '+escapeHtml(e.message)+'</div>';
-}
+// UPLOAD WITH LIVE PROGRESS
+function uploadWithProgress(form) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open("POST", apiBase() + "/api/upload");
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+
+        $("progressBar").style.width = percent + "%";
+        $("progressNumber").textContent = percent + "%";
+        $("progressText").textContent = "Uploading video...";
+      }
+    };
+
+    xhr.onload = () => {
+      let data = {};
+
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {}
+
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(data);
+      } else {
+        reject(
+          new Error(
+            data.detail ||
+            data.message ||
+            "Upload failed: " + xhr.status
+          )
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Network error during video upload."));
+    };
+
+    xhr.onabort = () => {
+      reject(new Error("Video upload was cancelled."));
+    };
+
+    xhr.send(form);
+  });
 }
 
-function renderProjects(){
-if(!projects.length){
-$("projectList").innerHTML='<div class="panel p-8 small">No projects available yet.</div>';
-}else{
-$("projectList").innerHTML=projects.map(p=>`
-<div class="panel p-5">
-<div class="font-bold">${escapeHtml(p.name||"Untitled project")}</div>
-<div class="small mt-2">Status: ${escapeHtml(p.status||"Created")}</div>
-<div class="small mt-1">${escapeHtml(p.created_at||"")}</div>
-<button class="text-purple-300 text-sm mt-4" onclick="loadClips('${escapeAttr(p.id)}')">View clips →</button>
-</div>`).join("");
+// WATCH PROCESSING STATUS
+function watchJob(jobId) {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+  }
+
+  pollTimer = setInterval(async () => {
+    try {
+      const data = await request(
+        "/api/jobs/" + encodeURIComponent(jobId)
+      );
+
+      const job = data.job;
+
+      if (!job) {
+        throw new Error("Job information not found.");
+      }
+
+      const progress = Math.min(
+        100,
+        Number(job.progress || 0)
+      );
+
+      $("progressBar").style.width = progress + "%";
+      $("progressNumber").textContent = progress + "%";
+      $("progressText").textContent =
+        job.stage || job.status || "Processing";
+
+      if (job.status === "completed") {
+        clearInterval(pollTimer);
+        pollTimer = null;
+
+        $("processingMessage").textContent =
+          "✓ Processing completed! Your clips are ready.";
+
+        $("startBtn").disabled = false;
+        $("startBtn").textContent = "✦ Generate AI Clips";
+
+        await loadProjects();
+        await loadClips(jobId);
+      }
+
+      if (job.status === "failed") {
+        clearInterval(pollTimer);
+        pollTimer = null;
+
+        $("processingMessage").textContent =
+          "Processing failed: " + (job.error || "Unknown error");
+
+        $("startBtn").disabled = false;
+        $("startBtn").textContent = "✦ Generate AI Clips";
+
+        await loadProjects();
+      }
+
+    } catch (e) {
+      $("processingMessage").textContent =
+        "Status check failed: " + e.message;
+
+      clearInterval(pollTimer);
+      pollTimer = null;
+
+      $("startBtn").disabled = false;
+      $("startBtn").textContent = "✦ Generate AI Clips";
+    }
+  }, 3000);
 }
+
+// LOAD ALL JOBS
+async function loadProjects() {
+  try {
+    const data = await request("/api/jobs");
+
+    projects = Array.isArray(data.jobs) ? data.jobs : [];
+
+    renderProjects();
+
+    // Collect clips from all jobs
+    clips = [];
+
+    projects.forEach(job => {
+      (job.clips || []).forEach(clip => {
+        clips.push({
+          ...clip,
+          job_id: job.job_id
+        });
+      });
+    });
+
+    updateStats();
+
+  } catch (e) {
+    $("projectList").innerHTML =
+      '<div class="panel p-6 small">Unable to load projects: ' +
+      escapeHtml(e.message) + '</div>';
+  }
+}
+
+// DISPLAY PROJECTS
+function renderProjects() {
+  const container = $("projectList");
+
+  if (!projects.length) {
+    container.innerHTML =
+      '<div class="panel p-8 small">No projects available yet.</div>';
+    updateStats();
+    return;
+  }
+
+  container.innerHTML = projects.map(job => `
+    <div class="panel p-5">
+      <div class="font-bold">
+        ${escapeHtml(job.filename || "Untitled video")}
+      </div>
+
+      <div class="small mt-2">
+        Status: ${escapeHtml(job.status || "Unknown")}
+      </div>
+
+      <div class="small mt-1">
+        Progress: ${Number(job.progress || 0)}%
+      </div>
+
+      <div class="progress mt-3">
+        <div style="width:${Math.min(100, Number(job.progress || 0))}%"></div>
+      </div>
+
+      <div class="small mt-3">
+        ${escapeHtml(job.stage || "")}
+      </div>
+
+      <button
+        class="text-purple-300 text-sm mt-4"
+        onclick="loadClips('${escapeAttr(job.job_id)}')">
+        View clips →
+      </button>
+    </div>
+  `).join("");
+
+  updateStats();
+}
+
+// LOAD CLIPS FOR A JOB
+async function loadClips(jobId) {
+  try {
+    const data = await request(
+      "/api/jobs/" + encodeURIComponent(jobId)
+    );
+
+    const job = data.job;
+
+    if (!job) {
+      throw new Error("Job not found.");
+    }
+
+    clips = (job.clips || []).map(clip => ({
+      ...clip,
+      job_id: jobId
+    }));
+
+    renderDownloads();
+    showPage("downloads");
+
+  } catch (e) {
+    alert("Could not load clips: " + e.message);
+  }
+}
+
+// DOWNLOADS PAGE
+function renderDownloads() {
+  const container = $("downloadList");
+
+  const completed = clips.filter(
+    clip => clip.status === "completed"
+  );
+
+  if (!completed.length) {
+    container.innerHTML =
+      '<div class="panel p-8 small">No completed downloads yet.</div>';
+    return;
+  }
+
+  container.innerHTML = completed.map(clip => {
+    const downloadUrl =
+      apiBase() +
+      "/api/download/" +
+      encodeURIComponent(clip.job_id) +
+      "/" +
+      encodeURIComponent(clip.clip_id);
+
+    return `
+      <div class="panel p-5 flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
+
+        <div>
+          <div class="font-bold">
+            ${escapeHtml(clip.title || clip.filename || "Generated clip")}
+          </div>
+
+          <div class="small mt-2">
+            Duration: ${escapeHtml(clip.duration ?? "N/A")} seconds
+          </div>
+
+          <div class="small mt-1">
+            Score: ${escapeHtml(clip.score ?? "N/A")}
+          </div>
+
+          <div class="small mt-1">
+            ${escapeHtml(clip.reason || "")}
+          </div>
+        </div>
+
+        <a
+          class="btn gradient inline-block text-sm"
+          href="${escapeAttr(downloadUrl)}"
+          download>
+          ↓ Download MP4
+        </a>
+
+      </div>
+    `;
+  }).join("");
+}
+
+// DASHBOARD STATISTICS
+function updateStats() {
+  const allClips = [];
+
+  projects.forEach(job => {
+    (job.clips || []).forEach(clip => {
+      allClips.push(clip);
+    });
+  });
+
+  const completedClips = allClips.filter(
+    clip => clip.status === "completed"
+  );
+
+  $("totalProjects").textContent = projects.length;
+  $("totalClips").textContent = allClips.length;
+  $("totalDownloads").textContent = completedClips.length;
+
+  $("recentProjects").innerHTML = projects.length
+    ? projects.slice(0, 4).map(job => `
+        <div class="py-3 border-b border-[#29293b]">
+          ${escapeHtml(job.filename || "Untitled video")}
+          <span class="float-right small">
+            ${escapeHtml(job.status || "Unknown")}
+          </span>
+        </div>
+      `).join("")
+    : "No projects yet. Create your first video project.";
+}
+
+// LOCAL VIDEO PREVIEW
+$("previewFile").addEventListener("change", e => {
+  const file = e.target.files[0];
+
+  if (!file) return;
+
+  const video = $("previewVideo");
+
+  if (video.dataset.objectUrl) {
+    URL.revokeObjectURL(video.dataset.objectUrl);
+  }
+
+  const objectUrl = URL.createObjectURL(file);
+
+  video.dataset.objectUrl = objectUrl;
+  video.src = objectUrl;
+  video.classList.remove("hidden");
+});
+
+// SAFE HTML OUTPUT
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
+
+// INITIAL LOAD
 updateStats();
-}
 
-async function loadClips(projectId){
-try{
-const r=await request("/api/projects/"+encodeURIComponent(projectId)+"/clips");
-const data=await r.json();
-const list=Array.isArray(data)?data:(data.clips||[]);
-clips=list;
-renderDownloads();
-showPage("downloads");
-}catch(e){
-alert("Could not load clips: "+e.message);
+if (apiBase()) {
+  loadProjects();
 }
-}
-
-function renderDownloads(){
-const container=$("downloadList");
-if(!clips.length){
-container.innerHTML='<div class="panel p-8 small">No completed downloads yet.</div>';
-return;
-}
-container.innerHTML=clips.map(c=>`
-<div class="panel p-5 flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
-<div>
-<div class="font-bold">${escapeHtml(c.title||c.filename||"Generated clip")}</div>
-<div class="small mt-2">${escapeHtml(c.duration||"")} ${c.engagement_score!=null?"· Score: "+escapeHtml(c.engagement_score):""}</div>
-</div>
-<a class="btn gradient inline-block text-sm" href="${escapeAttr(apiBase())}/api/clips/${encodeURIComponent(c.id)}/download">↓ Download MP4</a>
-</div>`).join("");
-}
-
-function updateStats(){
-$("totalProjects").textContent=projects.length;
-$("totalClips").textContent=clips.length;
-$("totalDownloads").textContent=clips.length;
-$("recentProjects").innerHTML=projects.length?
-projects.slice(0,4).map(p=>`<div class="py-3 border-b border-[#29293b]">${escapeHtml(p.name||"Untitled")} <span class="float-right small">${escapeHtml(p.status||"Created")}</span></div>`).join("")
-:"No projects yet. Create your first video project.";
-}
-
-$("previewFile").addEventListener("change",e=>{
-const file=e.target.files[0];
-if(!file)return;
-const video=$("previewVideo");
-video.src=URL.createObjectURL(file);
-video.classList.remove("hidden");
-});
-
-function escapeHtml(s){
-return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function escapeAttr(s){return escapeHtml(s);}
-
-updateStats();
 </script>
-
-</body>
-</html>
