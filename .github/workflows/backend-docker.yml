@@ -9,24 +9,31 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   backend-checks:
     name: Build and Test Backend
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Build Docker Image
+      - name: Verify Docker
+        run: docker --version
+
+      - name: Build Backend Docker Image
         run: |
           docker build \
+            --progress=plain \
             -f backend/Dockerfile \
             -t cutter-ai-backend:latest \
             .
 
       - name: Run Backend Tests
         run: |
-          docker run --rm cutter-ai-backend:latest \
-            python -m pytest -q
-
+          docker run --rm \
+            cutter-ai-backend:latest \
+            python -m pytest -v backend/tests
