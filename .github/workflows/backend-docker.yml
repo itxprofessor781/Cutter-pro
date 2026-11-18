@@ -36,4 +36,4 @@ jobs:
         run: |
           docker run --rm \
             cutter-ai-backend:latest \
-            python -m pytest -v backend/tests
+            python -m pytest -v tests
